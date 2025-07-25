@@ -15,7 +15,8 @@ from langchain.chains import RetrievalQA
 load_dotenv()
 
 # Initialize embedding model and language model
-embed_model = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
 llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
     google_api_key=os.getenv("GOOGLE_API_KEY"),
