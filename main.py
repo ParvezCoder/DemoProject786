@@ -11,8 +11,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import RetrievalQA
+import chromadb
 from chromadb.config import Settings
-
 # Load environment variables
 load_dotenv()
 
@@ -51,14 +51,19 @@ if uploaded_file is not None:
         # Store in Chroma
         persist_directory = "chroma_store"
         # When creating Chroma
+        settings = Settings(
+            chroma_db_impl="duckdb+parquet",
+            persist_directory=persist_directory
+            )
+
+        client = chromadb.PersistentClient(settings=settings)
+
         vectorstore = Chroma.from_documents(
-            
             documents=doc_list,
             embedding=embed_model,
             persist_directory=persist_directory,
-            client_settings=Settings(chroma_db_impl="duckdb+parquet", persist_directory=persist_directory)  # 👈 Add this
+            client=client
             )
-
         retriever = vectorstore.as_retriever()
         qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever, return_source_documents=True)
 
